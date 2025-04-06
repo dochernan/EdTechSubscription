@@ -1,0 +1,152 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EdTech Subscription Homepage</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f9f9f9;
+        }
+
+        .navbar, .footer, .text-muted{
+            background-color: darkslategrey;
+            color: khaki !important;
+        }
+
+        .navbar-brand, .navbar-brand:hover {
+            color: whitesmoke;
+        }
+
+        .nav-link {
+            color: whitesmoke;
+        }
+
+        .nav-link:hover {
+            color: khaki;
+        }
+
+        .nav-link.active {
+            color: khaki !important;
+            font-weight: bold;
+        }
+
+        .jumbotron {
+            background-color: darkslategrey;
+            color: whitesmoke;
+            padding: 3rem 2rem;
+            border-radius: 1rem;
+            margin-top: 1rem;
+        }
+
+        .main-content {
+            background-color: #f7f2e7;
+            padding: 3rem;
+            border-radius: 1rem;
+            margin-top: 2rem;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .main-logo {
+            max-width: 100%;
+            border-radius: 1rem;
+        }
+       .form-section {
+            margin-top: 2rem;
+        }
+        .form-label {
+            font-weight: bold;
+        }
+        .btn-submit {
+            background-color: darkslategrey;
+            color: khaki;
+        }
+        .btn-submit:hover {
+            background-color: #355e5e;
+        }
+
+    </style>
+</head>
+<body>
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">EdTech @ ISM</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link active" href="{% url 'home' %}">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'subscriptions' %}">Subscription</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">How To</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">AI Guidelines</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">FAQ</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Jumbotron -->
+<div class="container mt-4">
+    <div class="jumbotron text-center">
+        <h1 class="display-4">Technology at ISM</h1>
+        <p class="lead"></p>
+        <hr class="my-4">
+        <p>International School Manila is committed to delivering the highest quality education in line with current
+            best practices in the integration of technology. We believe that students thrive in an environment in which
+            education with technology is a seamless part of their lives.
+
+            The integration of technology in education provides new learning and teaching opportunities. Students today
+            will experience a connected digital world their entire lives. The opportunities provided by the use of
+            technology include increased independence, responsibility and learning through technology.</p>
+    </div>
+</div>
+
+<!-- Main Content Section -->
+<div class="container main-content">
+    <div class="row align-items-center">
+        <div class="col-md-6 text-center">
+            <img src="{% static 'images/edtechhub.png' %}" alt="EdTech Logo" class="main-logo">
+        </div>
+        <div class="col-md-6">
+            <h2>Empowering Education Through Technology</h2>
+            <p><br><br>
+                International School Manila is committed to delivering the highest quality education in line with
+                current
+                best practices in the integration of technology. We believe that students thrive in an environment in
+                which education with technology is a seamless part of their lives.
+                <br><br>
+                International School Manila's goal is to provide students with the understanding, tools and skill sets
+                needed to use technology in ways appropriate to their education and learning as deemed by the school.
+                <br><br>
+                The BYOD program has helped students to take ownership and responsibility for their learning both in and
+                outside of the classroom.</p>
+        </div>
+    </div>
+</div>
+<div>
+                {% if user.is_authenticated %}
+                    <p class="lead">Hello, {{ user.first_name|default:user.username }}!</p>
+                    <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-lg">Logout</a>
+                {% else %}
+                    <a href="{% url 'social:begin' 'google-oauth2' %}" class="google-btn">
+                        <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo">
+                        Sign in with Google
+                    </a>
+                {% endif %}
+</div>
+
+<!-- Footer -->
+<footer class="footer text-center mt-5 py-3">
+    <div class="container">
+        <span class="text-muted">&copy; 2025 EdTech @ ISM. All rights reserved.</span>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
