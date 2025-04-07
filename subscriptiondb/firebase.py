@@ -5,11 +5,12 @@ import os
 
 
 # Path to the serviceAccountKey.json file
+cred_path = os.environ.get("FIREBASE_CREDENTIALS_PATH")
 current_directory = os.path.dirname(os.path.abspath(__file__))
-json_path = os.path.join(current_directory, 'edtech-e32be-firebase-adminsdk-fbsvc-e00807520f.json')
+
 
 # Initialize the Firebase Admin SDK
-cred = credentials.Certificate(json_path)
+cred = credentials.Certificate(cred_path)
 firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://edtech-e32be-default-rtdb.asia-southeast1.firebasedatabase.app/'  # Replace with your Firebase database URL
 })
