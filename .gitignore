@@ -4,4 +4,3 @@ __pycache__/
 db.sqlite3
 venv/
 edtech-e32be-firebase-adminsdk-fbsvc-e00807520f.json
-settings.py
