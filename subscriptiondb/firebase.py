@@ -43,3 +43,12 @@ def search_subscription_in_firebase(search_key, search_value):
                 return {subscription_id: subscription_data}  # Return subscription details if found
 
     return None  # Return None if subscription is not found
+
+def save_user_to_firebase(user):
+    user_ref = database_ref.child('users').child(str(user.id))
+    user_ref.set({
+        'username': user.username,
+        'email': user.email,
+        'first_name': user.first_name,
+        'last_name': user.last_name,
+    })
