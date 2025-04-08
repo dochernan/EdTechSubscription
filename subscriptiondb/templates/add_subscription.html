@@ -10,23 +10,29 @@
         body {
             background-color: #f9f9f9;
         }
+
         .navbar, .footer, .text-muted {
             background-color: darkslategrey;
             color: khaki !important;
         }
+
         .navbar-brand, .navbar-brand:hover {
             color: whitesmoke;
         }
+
         .nav-link {
             color: whitesmoke;
         }
+
         .nav-link:hover {
             color: khaki;
         }
+
         .nav-link.active {
             color: khaki !important;
             font-weight: bold;
         }
+
         .main-content {
             background-color: #f7f2e7;
             padding: 3rem;
@@ -34,16 +40,20 @@
             margin-top: 2rem;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
         }
+
         .form-section {
             margin-top: 2rem;
         }
+
         .form-label {
             font-weight: bold;
         }
+
         .btn-submit {
             background-color: darkslategrey;
             color: khaki;
         }
+
         .btn-submit:hover {
             background-color: #355e5e;
         }
@@ -94,12 +104,20 @@
                 <input type="text" class="form-control" id="responsible" name="responsible" required>
             </div>
             <div class="col-md-3">
-                <label for="division" class="form-label">Division Tags (Select one or more)</label>
-                <select class="form-select" id="division" name="division" multiple>
-                    <option value="ES">ES</option>
-                    <option value="MS">MS</option>
-                    <option value="HS">HS</option>
-                </select>
+                <label class="form-label d-block">Division Tags (Select one or more)</label>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="divisionES" name="division" value="ES">
+                    <label class="form-check-label" for="divisionES">ES</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="divisionMS" name="division" value="MS">
+                    <label class="form-check-label" for="divisionMS">MS</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="divisionHS" name="division" value="HS">
+                    <label class="form-check-label" for="divisionHS">HS</label>
+                </div>
+
             </div>
             <div class="col-md-3">
                 <label for="subject" class="form-label">Grade or Subject Area</label>

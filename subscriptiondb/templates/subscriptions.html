@@ -144,7 +144,7 @@
                         <span class="badge bg-success me-1">{{ tag }}</span>
                     {% endfor %}</td>
                 <td>
-                    <button class="btn btn-submit">Edit</button>
+                    <a href="{% url 'edit_subscription' key %}" class="btn btn-submit"><i class="bi bi-eye"></i></a>
                     <a href="{% url 'delete_subscription' key %}" class="btn btn-danger" title="Delete" onclick="return confirm('Are you sure you want to delete this subscription?');">
     <i class="bi bi-trash"></i>
 </a>

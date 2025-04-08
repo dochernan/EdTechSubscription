@@ -16,7 +16,7 @@ firebase_admin.initialize_app(cred, {
 database_ref = db.reference()
 
 # Function to add a user to Firebase
-def add_subscription_to_firebase(appname, renewaldate, responsible, division, subject):
+def add_subscription_to_firebase(appname, renewaldate, responsible, division, subject, cost_per_unit, num_licenses, cost_quote, link, admin_dashboard, admin_accounts, admin_username, admin_password, account_contact, renewal_recipient, edtech_notes):
     # Ensure division is stored as a list in Firebase
     if isinstance(division, str):
         division = [division]  # fallback in case it's passed as a single string
@@ -30,6 +30,18 @@ def add_subscription_to_firebase(appname, renewaldate, responsible, division, su
         'responsible': responsible,
         'division': division,
         'subject': subject,
+        'cost_per_unit': cost_per_unit,
+        'num_licenses': num_licenses,
+        'cost_quote': cost_quote,
+        'link': link,
+        'admin_dashboard': admin_dashboard,
+        'admin_accounts': admin_accounts,
+        'admin_username': admin_username,
+        'admin_password' : admin_password,
+        'account_contact': account_contact,
+        'renewal_recipient': renewal_recipient,
+        'edtech_notes': edtech_notes,
+
     })
     return app_ref
 
