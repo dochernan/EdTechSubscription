@@ -74,38 +74,106 @@
     <h2 class="mb-4">Add New Subscription or App</h2>
     <form method="post" action="{% url 'add_subscription' %}">
         {% csrf_token %}
+
+        <!-- Basic Info -->
         <div class="row mb-3">
             <div class="col-md-6">
-                <label for="name" class="form-label">Subscription/App Name</label>
+                <label for="appname" class="form-label">Subscription/App Name</label>
                 <input type="text" class="form-control" id="appname" name="appname" required>
             </div>
             <div class="col-md-6">
-                <label for="renewal_date" class="form-label">Renewal Date</label>
+                <label for="renewaldate" class="form-label">Renewal Date</label>
                 <input type="date" class="form-control" id="renewaldate" name="renewaldate" required>
             </div>
         </div>
+
+        <!-- Responsibility and Classification -->
         <div class="row mb-3">
             <div class="col-md-6">
                 <label for="responsible" class="form-label">Responsible</label>
                 <input type="text" class="form-control" id="responsible" name="responsible" required>
             </div>
             <div class="col-md-3">
-                <label for="division" class="form-label">Division Tag</label>
-                <select class="form-select" id="division" name="division">
+                <label for="division" class="form-label">Division Tags (Select one or more)</label>
+                <select class="form-select" id="division" name="division" multiple>
                     <option value="ES">ES</option>
                     <option value="MS">MS</option>
                     <option value="HS">HS</option>
-                    <option value="ALL">ALL</option>
                 </select>
             </div>
             <div class="col-md-3">
-                <label for="subject_area" class="form-label">Grade or Subject Area</label>
+                <label for="subject" class="form-label">Grade or Subject Area</label>
                 <input type="text" class="form-control" id="subject" name="subject">
             </div>
         </div>
+
+        <!-- Financial Details -->
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label for="cost_per_unit" class="form-label">Cost per Unit</label>
+                <input type="number" step="0.01" class="form-control" id="cost_per_unit" name="cost_per_unit">
+            </div>
+            <div class="col-md-4">
+                <label for="num_licenses" class="form-label"># of Licenses</label>
+                <input type="number" class="form-control" id="num_licenses" name="num_licenses">
+            </div>
+            <div class="col-md-4">
+                <label for="cost_quote" class="form-label">Cost Quote</label>
+                <input type="text" class="form-control" id="cost_quote" name="cost_quote">
+            </div>
+        </div>
+
+        <!-- Admin and Account Access -->
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label for="link" class="form-label">Link</label>
+                <input type="url" class="form-control" id="link" name="link">
+            </div>
+            <div class="col-md-4">
+                <label for="admin_dashboard" class="form-label">Administrator Dashboard Link</label>
+                <input type="url" class="form-control" id="admin_dashboard" name="admin_dashboard">
+            </div>
+            <div class="col-md-4">
+                <label for="admin_accounts" class="form-label">Admin Accounts</label>
+                <input type="text" class="form-control" id="admin_accounts" name="admin_accounts">
+            </div>
+        </div>
+
+        <!-- Admin Login Info -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="admin_username" class="form-label">Admin Username</label>
+                <input type="text" class="form-control" id="admin_username" name="admin_username">
+            </div>
+            <div class="col-md-6">
+                <label for="admin_password" class="form-label">Admin Password</label>
+                <input type="text" class="form-control" id="admin_password" name="admin_password">
+            </div>
+        </div>
+
+        <!-- Contacts -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="account_contact" class="form-label">Account Contact Email</label>
+                <input type="email" class="form-control" id="account_contact" name="account_contact">
+            </div>
+            <div class="col-md-6">
+                <label for="renewal_recipient" class="form-label">Renewal is sent to</label>
+                <input type="text" class="form-control" id="renewal_recipient" name="renewal_recipient">
+            </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="mb-3">
+            <label for="edtech_notes" class="form-label">Ed Tech Notes (Non-public)</label>
+            <textarea class="form-control" id="edtech_notes" name="edtech_notes" rows="3"></textarea>
+        </div>
+
+        <!-- Submit -->
         <button type="submit" class="btn btn-submit">Submit</button>
     </form>
 </div>
+
 
 <footer class="footer text-center mt-5 py-3">
     <div class="container">

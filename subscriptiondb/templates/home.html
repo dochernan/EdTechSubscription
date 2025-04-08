@@ -11,7 +11,7 @@
             background-color: #f9f9f9;
         }
 
-        .navbar, .footer, .text-muted{
+        .navbar, .footer, .text-muted {
             background-color: darkslategrey;
             color: khaki !important;
         }
@@ -53,16 +53,20 @@
             max-width: 100%;
             border-radius: 1rem;
         }
-       .form-section {
+
+        .form-section {
             margin-top: 2rem;
         }
+
         .form-label {
             font-weight: bold;
         }
+
         .btn-submit {
             background-color: darkslategrey;
             color: khaki;
         }
+
         .btn-submit:hover {
             background-color: #355e5e;
         }
@@ -89,6 +93,21 @@
         </div>
     </div>
 </nav>
+
+<div class="container main-content">
+    <div class="row align-items-center">
+        <div class="col-md-12 text-center">
+            {% if user.is_authenticated %}
+                <p class="lead">Hello, {{ user.first_name|default:user.username }}!</p>
+                <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-lg">Logout</a>
+            {% else %}
+                <a href="{% url 'social:begin' 'google-oauth2' %}" class="btn btn-submit">
+                    Sign in with Google
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
 
 <!-- Jumbotron -->
 <div class="container mt-4">
@@ -128,17 +147,7 @@
         </div>
     </div>
 </div>
-<div>
-                {% if user.is_authenticated %}
-                    <p class="lead">Hello, {{ user.first_name|default:user.username }}!</p>
-                    <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-lg">Logout</a>
-                {% else %}
-                    <a href="{% url 'social:begin' 'google-oauth2' %}" class="google-btn">
-                        <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo">
-                        Sign in with Google
-                    </a>
-                {% endif %}
-</div>
+
 
 <!-- Footer -->
 <footer class="footer text-center mt-5 py-3">

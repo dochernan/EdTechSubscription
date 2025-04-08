@@ -2,12 +2,9 @@ import firebase_admin
 from firebase_admin import credentials, db
 import os
 
-
-
 # Path to the serviceAccountKey.json file
 cred_path = os.environ.get("FIREBASE_CREDENTIALS_PATH")
 current_directory = os.path.dirname(os.path.abspath(__file__))
-
 
 # Initialize the Firebase Admin SDK
 cred = credentials.Certificate(cred_path)
@@ -20,6 +17,13 @@ database_ref = db.reference()
 
 # Function to add a user to Firebase
 def add_subscription_to_firebase(appname, renewaldate, responsible, division, subject):
+    # Ensure division is stored as a list in Firebase
+    if isinstance(division, str):
+        division = [division]  # fallback in case it's passed as a single string
+
+    if isinstance(subject, str):
+        subject = [subject]
+
     app_ref = database_ref.child('subscriptions').push({
         'appname': appname,
         'renewaldate': renewaldate,
@@ -28,6 +32,7 @@ def add_subscription_to_firebase(appname, renewaldate, responsible, division, su
         'subject': subject,
     })
     return app_ref
+
 
 def get_subscriptions_from_firebase():
     subscriptions_ref = database_ref.child('subscriptions')
