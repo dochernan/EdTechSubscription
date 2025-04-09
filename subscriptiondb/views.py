@@ -9,6 +9,12 @@ def home(request):
 def subscriptions(request):
     return render(request, 'subscriptions.html')
 
+def contact_us(request):
+    return render(request, 'contact_us.html')
+
+def thank_you(request):
+    return render(request, 'thank_you.html')
+
 # Function to add user to Firebase Realtime Database
 def add_subscription_to_firebase(appname, renewaldate, responsible, division, subject, cost_per_unit, num_licenses, cost_quote, link, admin_dashboard, admin_accounts, admin_username, admin_password, account_contact, renewal_recipient, edtech_notes):
     # Ensure division is stored as a list in Firebase
@@ -131,4 +137,43 @@ def edit_subscription(request, key):
 
 
 
+from django.core.mail import send_mail
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def contact_us(request):
+    if request.method == 'POST':
+        name = request.user.get_full_name()
+        email = request.user.email
+        requested_app = request.POST.get('requested_app')
+        purpose = request.POST.get('purpose')
+        link = request.POST.get('link')
+        license_type = request.POST.get('license_type')
+        subjects = request.POST.get('subjects')
+        license_count = request.POST.get('license_count')
+        cost_per_license = request.POST.get('cost_per_license')
+
+        # Save the request to Firebase or your DB here if needed...
+
+        # Compose the confirmation email
+        subject = f"EdTech Request Submitted: {requested_app}"
+        message = (
+            f"Hello {name},\n\n"
+            f"Your request for \"{requested_app}\" has been successfully submitted.\n\n"
+            f"Summary:\n"
+            f"Purpose: {purpose}\n"
+            f"Link: {link}\n"
+            f"License Type: {license_type}\n"
+            f"Subjects: {subjects}\n"
+            f"Number of Licenses: {license_count}\n"
+            f"Cost per License: {cost_per_license}\n\n"
+            f"Thank you,\n"
+            f"EdTech @ ISM"
+        )
+
+        send_mail(subject, message, None, [email], fail_silently=False)
+
+        return redirect('thank_you')  # Or wherever you want to redirect
+    return render(request, 'contact_us.html')
 
