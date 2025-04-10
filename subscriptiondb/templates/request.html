@@ -1,0 +1,102 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Requests - EdTech @ ISM</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f9f9f9; }
+        .navbar, .footer, .text-muted { background-color: darkslategrey; color: khaki !important; }
+        .navbar-brand, .navbar-brand:hover { color: whitesmoke; }
+        .nav-link { color: whitesmoke; }
+        .nav-link:hover { color: khaki; }
+        .nav-link.active { color: khaki !important; font-weight: bold; }
+        .main-content {
+            background-color: #f7f2e7;
+            padding: 3rem;
+            border-radius: 1rem;
+            margin-top: 2rem;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        }
+        .table thead { background-color: #e0d7c6; }
+        .btn-submit {
+            background-color: darkslategrey;
+            color: khaki;
+        }
+        .btn-submit:hover {
+            background-color: #355e5e;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">EdTech @ ISM</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'subscriptions' %}">Subscription</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'contact_us' %}">Contact</a></li>
+                <li class="nav-item"><a class="nav-link active" href="#">Requests</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container main-content">
+    <h2 class="mb-4">Submitted Requests</h2>
+
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Requestor</th>
+                <th>Email</th>
+                <th>App</th>
+                <th>Purpose</th>
+                <th>Subjects</th>
+                <th>Licenses</th>
+                <th>Cost/License</th>
+                <th>Type</th>
+                <th>Link</th>
+                <th>Date Requested</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if requests %}
+                {% for req in requests %}
+                <tr>
+                    <td>{{ req.requestor_name }}</td>
+                    <td>{{ req.requestor_email }}</td>
+                    <td>{{ req.requested_app }}</td>
+                    <td>{{ req.purpose }}</td>
+                    <td>{{ req.subjects|join:', ' }}</td>
+                    <td>{{ req.license_count }}</td>
+                    <td>{{ req.cost_per_license }}</td>
+                    <td>{{ req.license_type }}</td>
+                    <td><a href="{{ req.link }}" target="_blank">Link</a></td>
+                    <td>{{ req.date_requested }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="10" class="text-center">No requests found.</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<footer class="footer text-center mt-5 py-3">
+    <div class="container">
+        <span class="text-muted">&copy; 2025 EdTech @ ISM. All rights reserved.</span>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

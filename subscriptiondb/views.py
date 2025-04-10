@@ -1,5 +1,6 @@
 from django.contrib.auth import logout
 from django.shortcuts import render, redirect
+from datetime import datetime
 from .firebase import database_ref, search_subscription_in_firebase
 
 # Create your views here.
@@ -14,6 +15,26 @@ def contact_us(request):
 
 def thank_you(request):
     return render(request, 'thank_you.html')
+
+def request(request):
+
+    snapshot = database_ref.child('requests').get()
+
+    # Prepare the list of request data
+    requests_data = []
+
+    if snapshot:
+        for key, value in snapshot.items():
+            # Ensure 'subjects' is always a list
+            value['subjects'] = value.get('subjects', [])
+            requests_data.append(value)
+
+    context = {
+        'requests': requests_data
+    }
+
+    return render(request, 'request.html', context)
+
 
 # Function to add user to Firebase Realtime Database
 def add_subscription_to_firebase(appname, renewaldate, responsible, division, subject, cost_per_unit, num_licenses, cost_quote, link, admin_dashboard, admin_accounts, admin_username, admin_password, account_contact, renewal_recipient, edtech_notes):
@@ -155,6 +176,22 @@ def contact_us(request):
         cost_per_license = request.POST.get('cost_per_license')
 
         # Save the request to Firebase or your DB here if needed...
+        # Save the request to Firebase
+        request_data = {
+            'requestor_name': name,
+            'requestor_email': email,
+            'requested_app': requested_app,
+            'purpose': purpose,
+            'link': link,
+            'license_type': license_type,
+            'subjects': [s.strip() for s in subjects.split(',') if s.strip()],
+            'license_count': license_count,
+            'cost_per_license': cost_per_license,
+            'date_requested': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        }
+
+        # Push to Firebase under the 'requests' collection
+        database_ref.child('requests').push(request_data)
 
         # Compose the confirmation email
         subject = f"EdTech Request Submitted: {requested_app}"

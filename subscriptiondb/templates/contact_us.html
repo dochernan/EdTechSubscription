@@ -7,12 +7,32 @@
     <title>Contact Us - EdTech @ ISM</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background-color: #f9f9f9; }
-        .navbar, .footer, .text-muted { background-color: darkslategrey; color: khaki !important; }
-        .navbar-brand, .navbar-brand:hover { color: whitesmoke; }
-        .nav-link { color: whitesmoke; }
-        .nav-link:hover { color: khaki; }
-        .nav-link.active { color: khaki !important; font-weight: bold; }
+        body {
+            background-color: #f9f9f9;
+        }
+
+        .navbar, .footer, .text-muted {
+            background-color: darkslategrey;
+            color: khaki !important;
+        }
+
+        .navbar-brand, .navbar-brand:hover {
+            color: whitesmoke;
+        }
+
+        .nav-link {
+            color: whitesmoke;
+        }
+
+        .nav-link:hover {
+            color: khaki;
+        }
+
+        .nav-link.active {
+            color: khaki !important;
+            font-weight: bold;
+        }
+
         .main-content {
             background-color: #f7f2e7;
             padding: 3rem;
@@ -20,11 +40,16 @@
             margin-top: 2rem;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
         }
-        .form-label { font-weight: bold; }
+
+        .form-label {
+            font-weight: bold;
+        }
+
         .btn-submit {
             background-color: darkslategrey;
             color: khaki;
         }
+
         .btn-submit:hover {
             background-color: #355e5e;
         }
@@ -45,6 +70,7 @@
                 <li class="nav-item"><a class="nav-link" href="#">How To</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">AI Guidelines</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">FAQ</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'request' %}">Requests</a></li>
             </ul>
         </div>
     </div>
@@ -57,7 +83,7 @@
 
         <div class="row mb-3">
             <div class="col-md-6">
-                <label class="form-label">Requestor Name</label>
+                <label class="form-label">Requestor Name:</label>
                 <input type="text" class="form-control" name="requestor_name" value="{{ user.get_full_name }}" readonly>
             </div>
             <div class="col-md-6">
@@ -106,7 +132,20 @@
             </div>
         </div>
 
-        <button type="submit" class="btn btn-submit">Submit Request</button>
+        <button type="submit" class="btn btn-submit" id="submitBtn">
+            <span id="btnText">Submit Request</span>
+            <span id="spinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+        </button>
+
+        <script>
+            document.querySelector('form').addEventListener('submit', function () {
+                const btn = document.getElementById('submitBtn');
+                btn.disabled = true;
+                document.getElementById('btnText').textContent = 'Submitting...';
+                document.getElementById('spinner').classList.remove('d-none');
+            });
+        </script>
+
     </form>
 </div>
 

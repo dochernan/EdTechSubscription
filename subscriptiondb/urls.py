@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-
+from django.contrib.auth import views as auth_views
 urlpatterns = [
     path('', views.home, name='home'),
     path('subscriptions/', views.list_subscriptions, name='subscriptions'),
@@ -10,6 +10,8 @@ path('subscriptions/edit/<str:key>/', views.edit_subscription, name='edit_subscr
 path('contact_us/', views.contact_us, name='contact_us'),
 
 path('thank_you/', views.thank_you, name='thank_you'),
+
+path('request/', views.request, name='request'),
 
 
 path('logout/', views.logout_view, name='logout'),
