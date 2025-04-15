@@ -51,6 +51,10 @@ def get_subscriptions_from_firebase():
     subscriptions = subscriptions_ref.get()  # Fetch all subscriptions from the database
     return subscriptions
 
+def get_users_from_firebase():
+    users_ref = database_ref.child('users')
+    users = users_ref.get()  # Fetch all users from the database
+    return users
 
 def search_subscription_in_firebase(search_key, search_value):
     subscriptions = get_subscriptions_from_firebase()
@@ -62,6 +66,32 @@ def search_subscription_in_firebase(search_key, search_value):
 
     return None  # Return None if subscription is not found
 
+# def search_user_in_firebase(search_key, search_value):
+#     users = get_users_from_firebase()
+#
+#     if users:
+#         for user_id, user_data in users.items():
+#             if user_data.get(search_key) == search_value:
+#                 return {user_id: user_data}  # Return subscription details if found
+#
+#     return None  # Return None if subscription is not found
+
+def search_user_in_firebase(search_key, search_value):
+    users = get_users_from_firebase()
+    results = {}
+
+    if users:
+        search_value = search_value.lower().strip()
+
+        for user_id, user_data in users.items():
+            field_value = str(user_data.get(search_key, "")).lower()
+
+            if search_value in field_value:
+                results[user_id] = user_data
+
+    return results if results else None
+
+
 def save_user_to_firebase(user):
     user_ref = database_ref.child('users').child(str(user.id))
     user_ref.set({
@@ -69,4 +99,5 @@ def save_user_to_firebase(user):
         'email': user.email,
         'first_name': user.first_name,
         'last_name': user.last_name,
+        'user_level': 'Basic',
     })

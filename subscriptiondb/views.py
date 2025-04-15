@@ -1,7 +1,7 @@
 from django.contrib.auth import logout
 from django.shortcuts import render, redirect
 from datetime import datetime
-from .firebase import database_ref, search_subscription_in_firebase
+from .firebase import database_ref, search_subscription_in_firebase, search_user_in_firebase
 
 # Create your views here.
 def home(request):
@@ -9,6 +9,9 @@ def home(request):
 
 def subscriptions(request):
     return render(request, 'subscriptions.html')
+
+def users(request):
+    return render(request, 'users.html')
 
 def contact_us(request):
     return render(request, 'contact_us.html')
@@ -73,6 +76,12 @@ def get_subscriptions_from_firebase():
     subscriptions = subscriptions_ref.get()
     return subscriptions
 
+# Function to retrieve subscriptions from Firebase Realtime Database
+def get_users_from_firebase():
+    users_ref = database_ref.child('users')
+    users = users_ref.get()
+    return users
+
 def add_subscription(request):
     if request.method == 'POST':
         appname = request.POST.get('appname')
@@ -107,6 +116,24 @@ def list_subscriptions(request):
 
     return render(request, "subscriptions.html", {"subscriptions": subscriptions})
 
+def list_users(request):
+    search_query = request.GET.get("search", "").strip()
+    users = {}
+
+    if search_query:
+        # Merge search results from both last_name and first_name
+        last_name_matches = search_user_in_firebase("last_name", search_query) or {}
+        first_name_matches = search_user_in_firebase("first_name", search_query) or {}
+
+        users.update(last_name_matches)
+        users.update(first_name_matches)
+    else:
+        users = get_users_from_firebase()
+
+    # This must always be called
+    return render(request, "users.html", {"users": users or {}})
+
+
 def logout_view(request):
     logout(request)
     return redirect('/')
@@ -117,6 +144,13 @@ def delete_subscription(request, key):
     except Exception as e:
         print(f"Error deleting subscription: {e}")
     return redirect('subscriptions')  # Or wherever your list page is
+
+def delete_user(request, key):
+    try:
+        database_ref.child('users').child(key).delete()
+    except Exception as e:
+        print(f"Error deleting user: {e}")
+    return redirect('users')  # Or wherever your list page is
 
 
 def edit_subscription(request, key):
@@ -156,7 +190,30 @@ def edit_subscription(request, key):
     }
     return render(request, 'edit_subscription.html', context)
 
+def edit_user(request, key):
+    user_ref = database_ref.child('users').child(key)
 
+    if request.method == 'POST':
+        # Grab updated values from form and update Firebase
+        updated_data = {
+            'email': request.POST.get('email'),
+            'first_name': request.POST.get('first_name'),
+            'last_name': request.POST.get('last_name'),
+            'username': request.POST.get('username'),
+            'user_level': request.POST.get('user_level'),
+
+
+        }
+        user_ref.update(updated_data)
+        return redirect('users')
+
+    # GET request – display current values
+    data = user_ref.get()
+    context = {
+        'key': key,
+        'users': data,
+    }
+    return render(request, 'edit_user.html', context)
 
 from django.core.mail import send_mail
 from django.shortcuts import render, redirect
@@ -213,4 +270,76 @@ def contact_us(request):
 
         return redirect('thank_you')  # Or wherever you want to redirect
     return render(request, 'contact_us.html')
+
+from django.http import JsonResponse
+
+def ajax_search_subscriptions(request):
+    search_query = request.GET.get('q', '').lower()
+    results = []
+
+    snapshot = database_ref.child('subscriptions').get()
+    if snapshot:
+        for key, sub in snapshot.items():
+            name = sub.get('appname', '').lower()
+            subject = ', '.join(sub.get('subject', [])).lower()
+            if search_query in name or search_query in subject:
+                results.append({
+                    'key': key,
+                    'appname': sub.get('appname'),
+                    'renewaldate': sub.get('renewaldate'),
+                    'responsible': sub.get('responsible'),
+                    'division': sub.get('division', []),
+                    'subject': sub.get('subject', [])
+                })
+
+    return JsonResponse({'subscriptions': results})
+
+
+from django.http import JsonResponse, HttpResponseServerError
+
+
+from django.http import JsonResponse, HttpResponseServerError
+
+def ajax_search_users(request):
+    try:
+        search_query = request.GET.get('q', '').lower()
+        results = []
+
+        snapshot = database_ref.child('users').get()
+        if isinstance(snapshot, list):
+            for idx, user in enumerate(snapshot):
+                if not isinstance(user, dict):
+                    continue
+                last_name = user.get('last_name', '').lower()
+                first_name = user.get('first_name', '').lower()
+                if search_query in last_name or search_query in first_name:
+                    results.append({
+                        'key': str(idx),
+                        'email': user.get('email'),
+                        'last_name': user.get('last_name'),
+                        'first_name': user.get('first_name'),
+                        'username': user.get('username'),
+                        'user_level': user.get('user_level'),
+                    })
+
+        elif isinstance(snapshot, dict):
+            for key, user in snapshot.items():
+                last_name = user.get('last_name', '').lower()
+                first_name = user.get('first_name', '').lower()
+                if search_query in last_name or search_query in first_name:
+                    results.append({
+                        'key': key,
+                        'email': user.get('email'),
+                        'last_name': user.get('last_name'),
+                        'first_name': user.get('first_name'),
+                        'username': user.get('username'),
+                        'user_level': user.get('user_level'),
+                    })
+
+        return JsonResponse({'users': results})
+
+    except Exception as e:
+        return HttpResponseServerError(f'Error fetching users: {str(e)}')
+
+
 

@@ -95,19 +95,21 @@
                 <li class="nav-item"><a class="nav-link" href="#">AI Guidelines</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">FAQ</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'request' %}">Requests</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'users' %}">Users</a></li>
             </ul>
         </div>
     </div>
 </nav>
 
 <div class="container search-bar">
-    <div class="row mb-4">
-        <form method="GET" class="d-flex align-items-center gap-2 flex-grow-1">
-            <input type="text" name="search" class="form-control form-control-md"
-                   placeholder="Search for a name or subject" value="{{ request.GET.search }}">
-            <button type="submit" class="btn btn-submit">Search</button>
-            <a href="{% url 'add_subscription' %}" class="btn btn-submit">+</a>
-        </form>
+    <div class="row justify-content-center mb-4">
+        <div class="col-md-8">
+            <form id="searchForm" class="d-flex align-items-center gap-2">
+                <input type="text" id="searchInput" class="form-control form-control-md"
+                       placeholder="Search for a name or subject">
+                <a href="{% url 'add_subscription' %}" class="btn btn-submit">+</a>
+            </form>
+        </div>
     </div>
 </div>
 
@@ -116,9 +118,11 @@
 
 
 
+
+
 <div class="container main-content">
     <div class="table-responsive">
-<table class="table table-striped table-bordered">
+<table class="table table-striped table-bordered" >
     <thead class="table-header">
     <tr>
         <th>Subscription/App Name</th>
@@ -129,7 +133,7 @@
         <th>Action</th>
     </tr>
     </thead>
-    <tbody>
+    <tbody id="subscriptionTableBody">
     {% if subscriptions %}
         {% for key, sub in subscriptions.items %}
             <tr>
@@ -171,5 +175,42 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    document.getElementById('searchInput').addEventListener('input', function () {
+        const query = this.value;
+
+        fetch(`/subscriptions/search/?q=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.getElementById('subscriptionTableBody');
+                tableBody.innerHTML = '';
+
+                const subs = data.subscriptions;
+
+                if (subs.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="6" class="text-center">No subscriptions found.</td></tr>';
+                    return;
+                }
+
+                subs.forEach(sub => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${sub.appname}</td>
+                        <td>${sub.renewaldate}</td>
+                        <td>${sub.responsible}</td>
+                        <td>${sub.division.map(tag => `<span class="badge bg-success me-1">${tag}</span>`).join('')}</td>
+                        <td>${sub.subject.map(tag => `<span class="badge bg-success me-1">${tag}</span>`).join('')}</td>
+                        <td>
+                            <a href="/subscriptions/edit/${sub.key}/" class="btn btn-submit"><i class="bi bi-eye"></i></a>
+                            <a href="/subscriptions/delete/${sub.key}/" class="btn btn-danger" onclick="return confirm('Are you sure?')"><i class="bi bi-trash"></i></a>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            });
+    });
+</script>
+
 </body>
 </html>
