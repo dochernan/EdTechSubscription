@@ -105,6 +105,19 @@
 
         }
 
+                .hero-text2 {
+            position: absolute;
+            top: 30px;
+            left: 40px;
+            font-family: Montserrat;
+
+            padding: 1.5rem 2rem;
+
+
+            max-width: 650px;
+
+        }
+
         .hero-text h1 {
             font-size: 3.8rem;
             margin-bottom: 0.5rem;
@@ -205,6 +218,15 @@
                 font-size: 0.85rem;
             }
         }
+
+        .bi-envelope-fill {
+    font-size: 1.1rem;
+}
+
+a.text-dark:hover .bi-envelope-fill {
+    color: darkslategrey;
+}
+
 
     </style>
 </head>
@@ -311,8 +333,9 @@
 
 <div class="hero-banner">
     <img src="{% static 'images/vr.jpg' %}" alt="EdTech Banner" class="banner2-img">
-    <div class="hero-text">
+    <div class="hero-text2">
         <h1>Technology Integration</h1>
+        <br>
         <p>International School Manila is committed to delivering the highest quality education in line with current
             best practices in the integration of technology. We believe that students thrive in an environment in which
             education with technology is a seamless part of their lives.
@@ -340,6 +363,9 @@
                  style="width: 120px; height: 120px; object-fit: cover;" alt="Hernan">
             <h6 class="mb-0">Hernan Alar</h6>
             <small>HS EdTech Coordinator</small>
+                <a href="mailto:alarh@ismanila.org" class="text-dark" title="Email Hernan">
+        <i class="bi bi-envelope-fill mt-1"></i>
+    </a>
         </div>
 
         <!-- Team Member 2 -->
@@ -348,14 +374,20 @@
                  style="width: 120px; height: 120px; object-fit: cover;" alt="Arbee">
             <h6 class="mb-0">Arbee Ballat</h6>
             <small>HS EdTech Specialist</small>
+            <a href="mailto:ballata@ismanila.org" class="text-dark" title="Email Arbee">
+        <i class="bi bi-envelope-fill mt-1"></i>
+    </a>
         </div>
 
         <!-- Team Member 3 -->
         <div class="col-6 col-md-4 col-lg-2">
             <img src="{% static 'images/team/polly.jpeg' %}" class="rounded-circle shadow-sm mb-2"
                  style="width: 120px; height: 120px; object-fit: cover;" alt="Polly">
-            <h6 class="mb-0">Polly vonBondugen</h6>
+            <h6 class="mb-0">Polly von Bodungen</h6>
             <small>ES EdTech Coordinator</small>
+            <a href="mailto:vonbodungenp@ismanila.org" class="text-dark" title="Email Polly">
+        <i class="bi bi-envelope-fill mt-1"></i>
+    </a>
         </div>
 
         <!-- Team Member 4 -->
@@ -364,6 +396,9 @@
                  style="width: 120px; height: 120px; object-fit: cover;" alt="Roxy">
             <h6 class="mb-0">Roxanne Cortes</h6>
             <small>ES EdTech Specialist</small>
+            <a href="mailto:cortesrox@ismanila.org" class="text-dark" title="Email Roxy">
+        <i class="bi bi-envelope-fill mt-1"></i>
+    </a>
         </div>
 
         <!-- Team Member 5 -->
@@ -372,6 +407,9 @@
                  style="width: 120px; height: 120px; object-fit: cover;" alt="Cary">
             <h6 class="mb-0">Cary Hart</h6>
             <small>MS EdTech Coordinator</small>
+            <a href="mailto:hartc@ismanila.org" class="text-dark" title="Email Cary">
+        <i class="bi bi-envelope-fill mt-1"></i>
+    </a>
         </div>
 
         <!-- Add a 6th if needed -->
@@ -381,6 +419,9 @@
                  style="width: 120px; height: 120px; object-fit: cover;" alt="Name">
             <h6 class="mb-0">Star Alcorcon</h6>
             <small>MS EdTech Specialist</small>
+            <a href="mailto:alcorcons@ismanila.org" class="text-dark" title="Email Star">
+        <i class="bi bi-envelope-fill mt-1"></i>
+    </a>
         </div>
 
 
