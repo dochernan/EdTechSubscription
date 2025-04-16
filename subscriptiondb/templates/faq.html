@@ -1,0 +1,152 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ - EdTech @ ISM</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: white;
+        }
+
+        .navbar, .footer, .text-muted {
+            background-color: darkslategrey;
+            color: khaki !important;
+        }
+
+        .navbar-brand, .navbar-brand:hover {
+            color: whitesmoke;
+        }
+
+        .nav-link {
+            color: whitesmoke;
+        }
+
+        .nav-link:hover {
+            color: khaki;
+        }
+
+        .nav-link.active {
+            color: khaki !important;
+            font-weight: bold;
+        }
+
+        .content-section {
+            padding: 3rem 0;
+        }
+
+        .faq-header {
+            font-weight: 600;
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: darkslategrey;
+        }
+
+        .accordion-button:not(.collapsed) {
+            background-color: #f8f9fa;
+            color: darkslategrey;
+        }
+
+        .accordion-button:focus {
+            box-shadow: none;
+        }
+
+    </style>
+</head>
+<body>
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">EdTech @ ISM</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav">
+
+                <!-- Always visible -->
+                <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+                <li class="nav-item"><a class="nav-link active" href="{% url 'faq' %}">FAQ</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'aiguidelines' %}">AI Guidelines</a></li>
+
+                {% if user.is_authenticated %}
+                    <!-- Visible to all authenticated users -->
+                    <li class="nav-item"><a class="nav-link" href="{% url 'subscriptions' %}">Subscription</a></li>
+
+                    {% if request.session.user_level == "Basic" %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'contact_us' %}">Requests</a></li>
+                    {% elif request.session.user_level == "Administrator" %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'request' %}">New Requests</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'users' %}">Users</a></li>
+                    {% endif %}
+                {% endif %}
+            </ul>
+
+        </div>
+    </div>
+</nav>
+
+<!-- FAQ Section -->
+<div class="container content-section">
+    <div class="faq-header">Frequently Asked Questions</div>
+    <div class="accordion" id="faqAccordion">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="faq1">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1">
+                    What is the BYOD program?
+                </button>
+            </h2>
+            <div id="collapse1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                    BYOD (Bring Your Own Device) allows students to use their personal laptops in school to support
+                    learning. Devices must meet the minimum specifications defined by ISM's IT department.
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="faq2">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapse2">
+                    Where can I access school-supported apps?
+                </button>
+            </h2>
+            <div id="collapse2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                    Visit the Subscriptions page to view all approved and licensed apps for students and teachers.
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="faq3">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapse3">
+                    Who do I contact for technical support?
+                </button>
+            </h2>
+            <div id="collapse3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                    You can reach out to the EdTech support team via the Contact Us page. Our IT staff is available
+                    during school hours for help with logins, devices, and other tech concerns.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer text-center mt-5 py-3">
+    <div class="container">
+        <span class="text-muted">&copy; 2025 EdTech @ ISM. All rights reserved.</span>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

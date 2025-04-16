@@ -2,23 +2,36 @@ from django.contrib.auth import logout
 from django.shortcuts import render, redirect
 from datetime import datetime
 from .firebase import database_ref, search_subscription_in_firebase, search_user_in_firebase
+from django.core.mail import send_mail
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 def home(request):
     return render(request, 'home.html')
 
+@login_required
 def subscriptions(request):
     return render(request, 'subscriptions.html')
 
+@login_required
 def users(request):
     return render(request, 'users.html')
 
+@login_required
 def contact_us(request):
     return render(request, 'contact_us.html')
 
 def thank_you(request):
     return render(request, 'thank_you.html')
 
+def aiguidelines(request):
+    return render(request, 'aiguidelines.html')
+
+def faq(request):
+    return render(request, 'faq.html')
+
+@login_required
 def request(request):
 
     snapshot = database_ref.child('requests').get()
@@ -215,9 +228,7 @@ def edit_user(request, key):
     }
     return render(request, 'edit_user.html', context)
 
-from django.core.mail import send_mail
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
+
 
 @login_required
 def contact_us(request):
@@ -300,6 +311,7 @@ from django.http import JsonResponse, HttpResponseServerError
 
 from django.http import JsonResponse, HttpResponseServerError
 
+@login_required
 def ajax_search_users(request):
     try:
         search_query = request.GET.get('q', '').lower()

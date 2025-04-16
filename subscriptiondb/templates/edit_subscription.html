@@ -37,12 +37,28 @@
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav">
+
+                <!-- Always visible -->
                 <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'subscriptions' %}">Subscription</a></li>
-                <li class="nav-item"><a class="nav-link active" href="#">Edit Subscription</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'faq' %}">FAQ</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'aiguidelines' %}">AI Guidelines</a></li>
+
+                {% if user.is_authenticated %}
+                    <!-- Visible to all authenticated users -->
+                    <li class="nav-item"><a class="nav-link active" href="{% url 'subscriptions' %}">Subscription</a>
+                    </li>
+
+                    {% if request.session.user_level == "Basic" %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'contact_us' %}">Requests</a></li>
+                    {% elif request.session.user_level == "Administrator" %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'request' %}">New Requests</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'users' %}">Users</a></li>
+                    {% endif %}
+                {% endif %}
             </ul>
+
         </div>
     </div>
 </nav>

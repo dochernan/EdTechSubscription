@@ -53,8 +53,25 @@ def get_subscriptions_from_firebase():
 
 def get_users_from_firebase():
     users_ref = database_ref.child('users')
-    users = users_ref.get()  # Fetch all users from the database
-    return users
+    raw_data = users_ref.get()  # Fetch all users from the database
+
+    normalized_users = {}
+
+    if isinstance(raw_data, dict):
+        # Already in desired format
+        return raw_data
+
+    elif isinstance(raw_data, list):
+        # Convert list to dict using index or UID if available
+        for index, user in enumerate(raw_data):
+            if isinstance(user, dict):
+                key = user.get('uid') or f"user_{index}"
+                normalized_users[key] = user
+
+        return normalized_users
+
+    return {}  # Return empty dict if no users or unexpected format
+
 
 def search_subscription_in_firebase(search_key, search_value):
     subscriptions = get_subscriptions_from_firebase()
@@ -94,10 +111,15 @@ def search_user_in_firebase(search_key, search_value):
 
 def save_user_to_firebase(user):
     user_ref = database_ref.child('users').child(str(user.id))
-    user_ref.set({
-        'username': user.username,
-        'email': user.email,
-        'first_name': user.first_name,
-        'last_name': user.last_name,
-        'user_level': 'Basic',
-    })
+
+    # Check if user already exists in Firebase
+    if user_ref.get() is None:
+        user_ref.set({
+            'username': user.username,
+            'email': user.email,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'user_level': 'Basic',
+        })
+
+
