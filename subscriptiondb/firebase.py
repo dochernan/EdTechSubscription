@@ -1,19 +1,57 @@
 import firebase_admin
 from firebase_admin import credentials, db
 import os
+import base64
+import json
 
-# Path to the serviceAccountKey.json file
-cred_path = os.environ.get("FIREBASE_CREDENTIALS_PATH")
-current_directory = os.path.dirname(os.path.abspath(__file__))
+from firebase_admin import credentials, initialize_app
 
-# Initialize the Firebase Admin SDK
-cred = credentials.Certificate(cred_path)
-firebase_admin.initialize_app(cred, {
-    'databaseURL': 'https://edtech-e32be-default-rtdb.asia-southeast1.firebasedatabase.app/'  # Replace with your Firebase database URL
-})
 
-# Reference to the Realtime Database
+#
+#
+# # Path to the serviceAccountKey.json file
+# cred_path = os.environ.get("FIREBASE_CREDENTIALS_PATH")
+# current_directory = os.path.dirname(os.path.abspath(__file__))
+#
+#
+#
+# # Initialize the Firebase Admin SDK
+# cred = credentials.Certificate(cred_path)
+# firebase_admin.initialize_app(cred, {
+#    'databaseURL': 'https://edtech-e32be-default-rtdb.asia-southeast1.firebasedatabase.app/'  # Replace with your Firebase database URL
+# })
+#
+# # Reference to the Realtime Database
+# database_ref = db.reference()
+import os
+import json
+import firebase_admin
+from firebase_admin import credentials, db
+
+def get_firebase_credentials():
+    # Try loading from file path (local dev)
+    cred_path = os.environ.get("FIREBASE_CREDENTIALS_PATH")
+    if cred_path and os.path.exists(cred_path):
+        return credentials.Certificate(cred_path)
+
+    # Else, try from string (Vercel env var)
+    firebase_creds_str = os.environ.get("FIREBASE_CREDENTIALS_JSON")
+    if firebase_creds_str:
+        firebase_creds_dict = json.loads(firebase_creds_str)
+        return credentials.Certificate(firebase_creds_dict)
+
+    raise ValueError("Firebase credentials not found.")
+
+# Initialize only if not already initialized
+if not firebase_admin._apps:
+    cred = get_firebase_credentials()
+    firebase_admin.initialize_app(cred, {
+        'databaseURL': 'https://edtech-e32be-default-rtdb.asia-southeast1.firebasedatabase.app/'
+    })
+
 database_ref = db.reference()
+
+
 
 # Function to add a user to Firebase
 def add_subscription_to_firebase(appname, renewaldate, responsible, division, subject, cost_per_unit, num_licenses, cost_quote, link, admin_dashboard, admin_accounts, admin_username, admin_password, account_contact, renewal_recipient, edtech_notes):
