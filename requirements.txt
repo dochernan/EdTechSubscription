@@ -7,6 +7,7 @@ charset-normalizer==3.4.1
 cryptography==44.0.2
 decouple==0.0.7
 defusedxml==0.7.1
+dj-database-url==2.3.0
 Django==5.1.7
 dotenv==0.9.9
 firebase-admin==6.7.0
@@ -29,6 +30,7 @@ msgpack==1.1.0
 oauthlib==3.2.2
 proto-plus==1.26.1
 protobuf==5.29.4
+psycopg2-binary==2.9.10
 pyasn1==0.6.1
 pyasn1_modules==0.4.2
 pycparser==2.22
@@ -42,6 +44,7 @@ rsa==4.9
 social-auth-app-django==5.4.3
 social-auth-core==4.5.6
 sqlparse==0.5.3
+typing_extensions==4.13.2
 uritemplate==4.1.1
 urllib3==2.3.0
 whitenoise==6.9.0
