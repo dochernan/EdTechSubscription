@@ -161,6 +161,7 @@ def add_subscription(request):
         if logo:
             # Save to Firebase Storage or handle as needed
             logo_url = upload_to_firebase_storage(logo)  # you define this method
+
         else:
             logo_url = None
 
