@@ -42,11 +42,15 @@ def get_firebase_credentials():
 
     raise ValueError("Firebase credentials not found.")
 
+
+
 # Initialize only if not already initialized
 if not firebase_admin._apps:
     cred = get_firebase_credentials()
     firebase_admin.initialize_app(cred, {
-        'databaseURL': 'https://edtech-e32be-default-rtdb.asia-southeast1.firebasedatabase.app/'
+        'databaseURL': 'https://edtech-e32be-default-rtdb.asia-southeast1.firebasedatabase.app/',
+        'storageBucket': 'edtech-e32be.firebasestorage.app'
+
     })
 
 database_ref = db.reference()
@@ -54,7 +58,7 @@ database_ref = db.reference()
 
 
 # Function to add a user to Firebase
-def add_subscription_to_firebase(appname, renewaldate, responsible, division, subject, cost_per_unit, num_licenses, cost_quote, link, admin_dashboard, admin_accounts, admin_username, admin_password, account_contact, renewal_recipient, edtech_notes):
+def add_subscription_to_firebase(appname, renewaldate, responsible, division, subject, cost_per_unit, num_licenses, cost_quote, link, admin_dashboard, admin_accounts, admin_username, admin_password, account_contact, renewal_recipient, edtech_notes, logourl):
     # Ensure division is stored as a list in Firebase
     if isinstance(division, str):
         division = [division]  # fallback in case it's passed as a single string
@@ -79,15 +83,48 @@ def add_subscription_to_firebase(appname, renewaldate, responsible, division, su
         'account_contact': account_contact,
         'renewal_recipient': renewal_recipient,
         'edtech_notes': edtech_notes,
+        'logourl': logourl,
 
     })
     return app_ref
 
 
+
+# def get_subscriptions_from_firebase():
+#     subscriptions_ref = database_ref.child('subscriptions')
+#     subscriptions = subscriptions_ref.get()  # Fetch all subscriptions from the database
+#     return subscriptions
+
+from google.cloud import storage
+
 def get_subscriptions_from_firebase():
     subscriptions_ref = database_ref.child('subscriptions')
-    subscriptions = subscriptions_ref.get()  # Fetch all subscriptions from the database
-    return subscriptions
+    subscriptions = subscriptions_ref.get()  # Dict of all subscriptions
+    updated_subscriptions = {}
+
+    # Initialize Firebase Storage client
+    storage_client = storage.Client()
+    bucket = storage_client.bucket("edtech-e32be.firebasestorage.app")
+
+    if subscriptions:
+        for key, data in subscriptions.items():
+            logo_path = data.get('logo_path')  # e.g., 'uploads/logos/canva.png'
+
+            if logo_path:
+                blob = bucket.blob(logo_path)
+                try:
+                    # Generate a signed URL valid for 1 hour (3600 seconds)
+                    url = blob.generate_signed_url(version="v4", expiration=3600)
+                    data['logo_url'] = url
+                except Exception as e:
+                    print(f"Error generating URL for {logo_path}: {e}")
+                    data['logo_url'] = None
+            else:
+                data['logo_url'] = None
+
+            updated_subscriptions[key] = data
+
+    return updated_subscriptions
 
 def get_users_from_firebase():
     users_ref = database_ref.child('users')

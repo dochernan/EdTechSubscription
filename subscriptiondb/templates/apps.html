@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EdTech Subscription Homepage</title>
+    <title>EdTech Subscription Apps</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
@@ -243,20 +243,20 @@ a.text-dark:hover .bi-envelope-fill {
             <ul class="navbar-nav">
 
                 <!-- Always visible -->
-                <li class="nav-item"><a class="nav-link active" href="{% url 'home' %}">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'faq' %}">FAQ</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'aiguidelines' %}">AI Guidelines</a></li>
 
                 {% if user.is_authenticated %}
                     <!-- Visible to all authenticated users -->
-                    <li class="nav-item"><a class="nav-link" href="{% url 'apps' %}">Apps</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="{% url 'apps' %}">Apps</a></li>
 
                     {% if request.session.user_level == "Basic" %}
                         <li class="nav-item"><a class="nav-link" href="{% url 'contact_us' %}">Requests</a></li>
                     {% elif request.session.user_level == "Administrator" %}
                         <li class="nav-item"><a class="nav-link" href="{% url 'request' %}">New Requests</a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'users' %}">Users</a></li>
-                        <li class="nav-item"><a class="nav-link active" href="{% url 'subscriptions' %}">Subscription</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'subscriptions' %}">Subscription</a></li>
                     {% endif %}
                 {% endif %}
             </ul>
@@ -265,169 +265,55 @@ a.text-dark:hover .bi-envelope-fill {
     </div>
 </nav>
 
-<!-- Hero Banner with Jumbotron-style Floating Text -->
-<div class="hero-banner">
-    <img src="{% static 'images/banner-white.jpg' %}" alt="EdTech Banner" class="banner-img">
-    <div class="hero-text">
-        <h1>Educational Technology @ ISM</h1>
-        <p>Supporting digital learning, tools, and innovation across our community.</p>
-    </div>
-</div>
-
-<!-- User Greeting/Login -->
-<div class="container-fluid content-section d-flex justify-content-center align-items-center gap-3 flex-wrap">
-    {% if user.is_authenticated %}
-        <span class="lead mb-0">Hello, {{ user.first_name|default:user.username }}!</span>
-        <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm">Logout</a>
-    {% else %}
-        <a href="{% url 'social:begin' 'google-oauth2' %}" class="btn btn-submit btn-sm">Sign in with Google</a>
-    {% endif %}
-</div>
-
-
-<div class="container-fluid content-section">
-    <div class="row text-center">
-        <!-- BYOD Card -->
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body">
-                    <i class="bi bi-laptop mb-3" style="font-size: 2rem; color: darkslategrey;"></i>
-                    <h5 class="card-title">BYOD</h5>
-                    <p class="card-text">
-                        Our Bring Your Own Device (BYOD) program empowers students to use their personal laptops to
-                        engage with learning, develop digital responsibility, and support a personalized learning
-                        experience.
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Apps Card -->
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body">
-                    <i class="bi bi-grid-1x2 mb-3" style="font-size: 2rem; color: darkslategrey;"></i>
-                    <h5 class="card-title">Apps</h5>
-                    <p class="card-text">
-                        Discover the suite of digital tools and apps licensed for student and teacher use at ISM. From
-                        productivity to creativity, our curated resources ensure smooth collaboration and learning.
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Support Card -->
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body">
-                    <i class="bi bi-headset mb-3" style="font-size: 2rem; color: darkslategrey;"></i>
-                    <h5 class="card-title">Support</h5>
-                    <p class="card-text">
-                        Need help with tech at school? Our EdTech and IT teams provide support for troubleshooting,
-                        access, and training—ensuring you stay connected and productive throughout the school year.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="hero-banner">
-    <img src="{% static 'images/vr.jpg' %}" alt="EdTech Banner" class="banner2-img">
-    <div class="hero-text2">
-        <h1>Technology Integration</h1>
-        <br>
-        <p>International School Manila is committed to delivering the highest quality education in line with current
-            best practices in the integration of technology. We believe that students thrive in an environment in which
-            education with technology is a seamless part of their lives.
-        </p><br>
-        <p>
-            International School Manila's goal is to provide students with the understanding, tools and skill sets
-            needed to use technology in ways appropriate to their education and learning as deemed by the school.
-        </p><br>
-        <p>
-            The BYOD program has helped students to take ownership and responsibility for their learning both in and
-            outside of the classroom.</p>
-    </div>
-</div>
-
-
-<!-- EdTech Team Static Section -->
+{% block content %}
 <div class="container content-section">
-    <h2 class="text-center mb-4" style="color: darkslategrey;">Meet the EdTech Team</h2>
+    <h2 class="text-center mb-4" style="color: darkslategrey;">School-Approved Apps</h2>
 
-    <div class="row text-center justify-content-center g-4">
+    <div class="row g-4 justify-content-center">
+        {% for app in apps %}
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <div class="card h-100 shadow-sm">
+                <img src="{{ app.logo_url }}" class="card-img-top" alt="{{ app.name }}" style="height: 160px; object-fit: contain; padding: 1rem;">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">{{ app.name }}</h5>
 
-        <!-- Team Member 1 -->
-        <div class="col-6 col-md-4 col-lg-2">
-            <img src="{% static 'images/team/hernan.jpeg' %}" class="rounded-circle shadow-sm mb-2"
-                 style="width: 120px; height: 120px; object-fit: cover;" alt="Hernan">
-            <h6 class="mb-0">Hernan Alar</h6>
-            <small>HS EdTech Coordinator</small>
-                <a href="mailto:alarh@ismanila.org" class="text-dark" title="Email Hernan">
-        <i class="bi bi-envelope-fill mt-1"></i>
-    </a>
+                    <!-- Division Badges -->
+                    {% if app.division %}
+                        <p class="card-text mb-1"><strong>Division:</strong></p>
+                        <div class="mb-2">
+                            {% for tag in app.division %}
+                                {% if tag == "ES" %}
+                                    <span class="badge bg-success me-1">{{ tag }}</span>
+                                {% elif tag == "MS" %}
+                                    <span class="badge bg-primary me-1">{{ tag }}</span>
+                                {% elif tag == "HS" %}
+                                    <span class="badge bg-danger me-1">{{ tag }}</span>
+                                {% else %}
+                                    <span class="badge bg-secondary me-1">{{ tag }}</span>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <!-- Subject Tags Badges -->
+                    {% if app.subject_tags %}
+                        <p class="card-text mb-1"><strong>Subject Tags:</strong></p>
+                        <div class="mb-2">
+                            {% for tag in app.subject_tags %}
+                                <span class="badge bg-info text-dark me-1">{{ tag }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <a href="{{ app.link }}" target="_blank" class="mt-auto btn btn-submit btn-sm">Open App</a>
+                </div>
+            </div>
         </div>
-
-        <!-- Team Member 2 -->
-        <div class="col-6 col-md-4 col-lg-2">
-            <img src="{% static 'images/team/arbee.jpeg' %}" class="rounded-circle shadow-sm mb-2"
-                 style="width: 120px; height: 120px; object-fit: cover;" alt="Arbee">
-            <h6 class="mb-0">Arbee Ballat</h6>
-            <small>HS EdTech Specialist</small>
-            <a href="mailto:ballata@ismanila.org" class="text-dark" title="Email Arbee">
-        <i class="bi bi-envelope-fill mt-1"></i>
-    </a>
-        </div>
-
-        <!-- Team Member 3 -->
-        <div class="col-6 col-md-4 col-lg-2">
-            <img src="{% static 'images/team/polly.jpeg' %}" class="rounded-circle shadow-sm mb-2"
-                 style="width: 120px; height: 120px; object-fit: cover;" alt="Polly">
-            <h6 class="mb-0">Polly von Bodungen</h6>
-            <small>ES EdTech Coordinator</small>
-            <a href="mailto:vonbodungenp@ismanila.org" class="text-dark" title="Email Polly">
-        <i class="bi bi-envelope-fill mt-1"></i>
-    </a>
-        </div>
-
-        <!-- Team Member 4 -->
-        <div class="col-6 col-md-4 col-lg-2">
-            <img src="{% static 'images/team/roxy.jpeg' %}" class="rounded-circle shadow-sm mb-2"
-                 style="width: 120px; height: 120px; object-fit: cover;" alt="Roxy">
-            <h6 class="mb-0">Roxanne Cortes</h6>
-            <small>ES EdTech Specialist</small>
-            <a href="mailto:cortesrox@ismanila.org" class="text-dark" title="Email Roxy">
-        <i class="bi bi-envelope-fill mt-1"></i>
-    </a>
-        </div>
-
-        <!-- Team Member 5 -->
-        <div class="col-6 col-md-4 col-lg-2">
-            <img src="{% static 'images/team/cary.jpeg' %}" class="rounded-circle shadow-sm mb-2"
-                 style="width: 120px; height: 120px; object-fit: cover;" alt="Cary">
-            <h6 class="mb-0">Cary Hart</h6>
-            <small>MS EdTech Coordinator</small>
-            <a href="mailto:hartc@ismanila.org" class="text-dark" title="Email Cary">
-        <i class="bi bi-envelope-fill mt-1"></i>
-    </a>
-        </div>
-
-        <!-- Add a 6th if needed -->
-
-        <div class="col-6 col-md-4 col-lg-2">
-            <img src="{% static 'images/team/star.jpeg' %}" class="rounded-circle shadow-sm mb-2"
-                 style="width: 120px; height: 120px; object-fit: cover;" alt="Name">
-            <h6 class="mb-0">Star Alcorcon</h6>
-            <small>MS EdTech Specialist</small>
-            <a href="mailto:alcorcons@ismanila.org" class="text-dark" title="Email Star">
-        <i class="bi bi-envelope-fill mt-1"></i>
-    </a>
-        </div>
-
-
+        {% endfor %}
     </div>
 </div>
+{% endblock %}
+
 
 
 

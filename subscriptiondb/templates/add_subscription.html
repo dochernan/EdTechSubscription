@@ -76,7 +76,7 @@
 
                 {% if user.is_authenticated %}
                     <!-- Visible to all authenticated users -->
-                    <li class="nav-item"><a class="nav-link active" href="{% url 'subscriptions' %}">Subscription</a>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'apps' %}">Apps</a>
                     </li>
 
                     {% if request.session.user_level == "Basic" %}
@@ -84,6 +84,7 @@
                     {% elif request.session.user_level == "Administrator" %}
                         <li class="nav-item"><a class="nav-link" href="{% url 'request' %}">New Requests</a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'users' %}">Users</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="{% url 'subscriptions' %}">Subscription</a></li>
                     {% endif %}
                 {% endif %}
             </ul>
@@ -94,7 +95,9 @@
 
 <div class="container main-content">
     <h2 class="mb-4">Add New Subscription or App</h2>
-    <form method="post" action="{% url 'add_subscription' %}">
+    {#    <form method="post" action="{% url 'add_subscription' %}">#}
+    {#        {% csrf_token %}#}
+    <form method="post" action="{% url 'add_subscription' %}" enctype="multipart/form-data">
         {% csrf_token %}
 
         <!-- Basic Info -->
@@ -197,6 +200,15 @@
         <div class="mb-3">
             <label for="edtech_notes" class="form-label">Ed Tech Notes (Non-public)</label>
             <textarea class="form-control" id="edtech_notes" name="edtech_notes" rows="3"></textarea>
+        </div>
+
+        <!-- App Logo Upload -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="logo" class="form-label">Upload App Logo</label>
+                <input type="file" class="form-control" id="logo" name="logo" accept="image/*">
+                <small>Supported formats: JPG, PNG. Max size: 2MB.</small>
+            </div>
         </div>
 
         <!-- Submit -->

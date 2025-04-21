@@ -31,6 +31,23 @@ def aiguidelines(request):
 def faq(request):
     return render(request, 'faq.html')
 
+def apps(request):
+    snapshot = database_ref.child("subscriptions").get()
+
+    apps = []
+    if snapshot:
+        for key, data in snapshot.items():
+            apps.append({
+                "name": data.get("appname"),
+                "division": data.get("division"),
+                "subject_tags": data.get("subject", "N/A"),
+                "link": data.get("link"),
+                "logo_url": data.get("logo_url") or "/static/images/default-logo.png",  # fallback
+            })
+
+    return render(request, "apps.html", {"apps": apps})
+
+
 @login_required
 def request(request):
 
@@ -50,6 +67,30 @@ def request(request):
     }
 
     return render(request, 'request.html', context)
+
+
+import uuid
+from firebase_admin import storage
+
+
+def upload_to_firebase_storage(file_obj, filename_prefix="logos"):
+    """
+    Uploads a file-like object to Firebase Storage and returns its public URL.
+    """
+    # Generate a unique filename
+    unique_filename = f"{filename_prefix}/{uuid.uuid4().hex}_{file_obj.name}"
+
+    # Get the Firebase bucket
+    bucket = storage.bucket()
+
+    # Create a blob and upload the file
+    blob = bucket.blob(unique_filename)
+    blob.upload_from_file(file_obj, content_type=file_obj.content_type)
+
+    # Make the file publicly accessible
+    blob.make_public()
+
+    return blob.public_url
 
 
 # Function to add user to Firebase Realtime Database
@@ -114,7 +155,16 @@ def add_subscription(request):
         renewal_recipient = request.POST.get('renewal_recipient')
         edtech_notes = request.POST.get('edtech_notes')
 
-        add_subscription_to_firebase(appname, renewaldate, responsible, division, subject, cost_per_unit, num_licenses, cost_quote, link, admin_dashboard, admin_username, admin_password, account_contact, renewal_recipient, edtech_notes)
+        logo = request.FILES.get("logo")
+        logo_url = None
+
+        if logo:
+            # Save to Firebase Storage or handle as needed
+            logo_url = upload_to_firebase_storage(logo)  # you define this method
+        else:
+            logo_url = None
+
+        add_subscription_to_firebase(appname, renewaldate, responsible, division, subject, cost_per_unit, num_licenses, cost_quote, link, admin_dashboard, admin_username, admin_password, account_contact, renewal_recipient, edtech_notes, logo_url)
         return redirect('subscriptions')  # Redirect to the list_subscriptions view
     return render(request, 'add_subscription.html')
 
