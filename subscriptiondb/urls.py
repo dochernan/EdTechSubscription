@@ -17,6 +17,7 @@ urlpatterns = [
     path('contact_us/', views.contact_us, name='contact_us'),
     path('thank_you/', views.thank_you, name='thank_you'),
     path('request/', views.request, name='request'),
+    path('responsibleuse/', views.responsibleuse, name='responsibleuse'),
     path('logout/', views.logout_view, name='logout'),
     path('subscriptions/search/', views.ajax_search_subscriptions, name='ajax_search_subscriptions'),
     path('users/search/', views.ajax_search_users, name='ajax_search_users'),

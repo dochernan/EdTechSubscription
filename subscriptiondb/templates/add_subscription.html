@@ -63,33 +63,80 @@
 <nav class="navbar navbar-expand-lg navbar-light">
     <div class="container-fluid">
         <a class="navbar-brand" href="#">EdTech @ ISM</a>
+
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
             <ul class="navbar-nav">
 
-                <!-- Always visible -->
-                <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'faq' %}">FAQ</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'aiguidelines' %}">AI Guidelines</a></li>
+                <!-- Home (default) -->
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}"
+                       href="{% url 'home' %}">Home</a>
+                </li>
+
+                <!-- Guidelines with sub-navigation -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="guidelinesDropdown" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        Guidelines
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="guidelinesDropdown">
+                        <li><a class="dropdown-item" href="{% url 'aiguidelines' %}">AI Guidelines</a></li>
+                        <li><a class="dropdown-item" href="{% url 'responsibleuse' %}">Responsible Use</a></li>
+                    </ul>
+                </li>
 
                 {% if user.is_authenticated %}
-                    <!-- Visible to all authenticated users -->
-                    <li class="nav-item"><a class="nav-link" href="{% url 'apps' %}">Apps</a>
+                    <!-- Apps with sub-navigation -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="appsDropdown" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            Apps
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="appsDropdown">
+                            <li><a class="dropdown-item" href="{% url 'apps' %}">Approved Apps</a></li>
+                            {% if request.session.user_level == "Basic" %}
+                                <li><a class="dropdown-item" href="{% url 'contact_us' %}">Request for Apps</a></li>
+                            {% elif request.session.user_level == "Administrator" %}
+                                <li><a class="dropdown-item" href="{% url 'subscriptions' %}">Subscription</a></li>
+                                <li><a class="dropdown-item" href="{% url 'request' %}">New Requests</a></li>
+                            {% endif %}
+                        </ul>
                     </li>
+                {% endif %}
 
-                    {% if request.session.user_level == "Basic" %}
-                        <li class="nav-item"><a class="nav-link" href="{% url 'contact_us' %}">Requests</a></li>
-                    {% elif request.session.user_level == "Administrator" %}
-                        <li class="nav-item"><a class="nav-link" href="{% url 'request' %}">New Requests</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'users' %}">Users</a></li>
-                        <li class="nav-item"><a class="nav-link active" href="{% url 'subscriptions' %}">Subscription</a></li>
-                    {% endif %}
+                <!-- FAQ (always visible) -->
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'faq' %}active{% endif %}"
+                       href="{% url 'faq' %}">FAQ</a>
+                </li>
+
+                <!-- Settings or Login -->
+                {% if user.is_authenticated %}
+                    <!-- Settings Dropdown (if logged in) -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="settingsDropdown" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            Settings
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="settingsDropdown">
+                            {% if request.session.user_level == "Administrator" %}
+                                <li><a class="dropdown-item" href="{% url 'users' %}">Users</a></li>
+                            {% endif %}
+                            <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <!-- Login button if NOT logged in -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'social:begin' 'google-oauth2' %}">Login</a>
+                    </li>
                 {% endif %}
             </ul>
-
         </div>
+
     </div>
 </nav>
 

@@ -105,7 +105,7 @@
 
         }
 
-                .hero-text2 {
+        .hero-text2 {
             position: absolute;
             top: 30px;
             left: 40px;
@@ -220,12 +220,12 @@
         }
 
         .bi-envelope-fill {
-    font-size: 1.1rem;
-}
+            font-size: 1.1rem;
+        }
 
-a.text-dark:hover .bi-envelope-fill {
-    color: darkslategrey;
-}
+        a.text-dark:hover .bi-envelope-fill {
+            color: darkslategrey;
+        }
 
 
     </style>
@@ -242,26 +242,73 @@ a.text-dark:hover .bi-envelope-fill {
         <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
             <ul class="navbar-nav">
 
-                <!-- Always visible -->
-                <li class="nav-item"><a class="nav-link active" href="{% url 'home' %}">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'faq' %}">FAQ</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'aiguidelines' %}">AI Guidelines</a></li>
+                <!-- Home (default) -->
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}"
+                       href="{% url 'home' %}">Home</a>
+                </li>
+
+                <!-- Guidelines with sub-navigation -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="guidelinesDropdown" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        Guidelines
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="guidelinesDropdown">
+                        <li><a class="dropdown-item" href="{% url 'aiguidelines' %}">AI Guidelines</a></li>
+                        <li><a class="dropdown-item" href="{% url 'responsibleuse' %}">Responsible Use</a></li>
+                    </ul>
+                </li>
 
                 {% if user.is_authenticated %}
-                    <!-- Visible to all authenticated users -->
-                    <li class="nav-item"><a class="nav-link" href="{% url 'apps' %}">Apps</a></li>
+                    <!-- Apps with sub-navigation -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="appsDropdown" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            Apps
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="appsDropdown">
+                            <li><a class="dropdown-item" href="{% url 'apps' %}">Approved Apps</a></li>
+                            {% if request.session.user_level == "Basic" %}
+                                <li><a class="dropdown-item" href="{% url 'contact_us' %}">Request for Apps</a></li>
+                            {% elif request.session.user_level == "Administrator" %}
+                                <li><a class="dropdown-item" href="{% url 'subscriptions' %}">Subscription</a></li>
+                                <li><a class="dropdown-item" href="{% url 'request' %}">New Requests</a></li>
+                            {% endif %}
+                        </ul>
+                    </li>
+                {% endif %}
 
-                    {% if request.session.user_level == "Basic" %}
-                        <li class="nav-item"><a class="nav-link" href="{% url 'contact_us' %}">Requests</a></li>
-                    {% elif request.session.user_level == "Administrator" %}
-                        <li class="nav-item"><a class="nav-link" href="{% url 'request' %}">New Requests</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'users' %}">Users</a></li>
-                        <li class="nav-item"><a class="nav-link active" href="{% url 'subscriptions' %}">Subscription</a></li>
-                    {% endif %}
+                <!-- FAQ (always visible) -->
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'faq' %}active{% endif %}"
+                       href="{% url 'faq' %}">FAQ</a>
+                </li>
+
+                <!-- Settings or Login -->
+                {% if user.is_authenticated %}
+                    <!-- Settings Dropdown (if logged in) -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="settingsDropdown" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            Settings
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="settingsDropdown">
+                            {% if request.session.user_level == "Administrator" %}
+                                <li><a class="dropdown-item" href="{% url 'users' %}">Users</a></li>
+                            {% endif %}
+                            <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <!-- Login button if NOT logged in -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'social:begin' 'google-oauth2' %}">Login</a>
+                    </li>
                 {% endif %}
             </ul>
-
         </div>
+
     </div>
 </nav>
 
@@ -278,9 +325,9 @@ a.text-dark:hover .bi-envelope-fill {
 <div class="container-fluid content-section d-flex justify-content-center align-items-center gap-3 flex-wrap">
     {% if user.is_authenticated %}
         <span class="lead mb-0">Hello, {{ user.first_name|default:user.username }}!</span>
-        <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm">Logout</a>
+{% comment %}        <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm">Logout</a>{% endcomment %}
     {% else %}
-        <a href="{% url 'social:begin' 'google-oauth2' %}" class="btn btn-submit btn-sm">Sign in with Google</a>
+        {% comment %}<a href="{% url 'social:begin' 'google-oauth2' %}" class="btn btn-submit btn-sm">Sign in with Google</a>{% endcomment %}
     {% endif %}
 </div>
 
@@ -364,9 +411,9 @@ a.text-dark:hover .bi-envelope-fill {
                  style="width: 120px; height: 120px; object-fit: cover;" alt="Hernan">
             <h6 class="mb-0">Hernan Alar</h6>
             <small>HS EdTech Coordinator</small>
-                <a href="mailto:alarh@ismanila.org" class="text-dark" title="Email Hernan">
-        <i class="bi bi-envelope-fill mt-1"></i>
-    </a>
+            <a href="mailto:alarh@ismanila.org" class="text-dark" title="Email Hernan">
+                <i class="bi bi-envelope-fill mt-1"></i>
+            </a>
         </div>
 
         <!-- Team Member 2 -->
@@ -376,8 +423,8 @@ a.text-dark:hover .bi-envelope-fill {
             <h6 class="mb-0">Arbee Ballat</h6>
             <small>HS EdTech Specialist</small>
             <a href="mailto:ballata@ismanila.org" class="text-dark" title="Email Arbee">
-        <i class="bi bi-envelope-fill mt-1"></i>
-    </a>
+                <i class="bi bi-envelope-fill mt-1"></i>
+            </a>
         </div>
 
         <!-- Team Member 3 -->
@@ -387,8 +434,8 @@ a.text-dark:hover .bi-envelope-fill {
             <h6 class="mb-0">Polly von Bodungen</h6>
             <small>ES EdTech Coordinator</small>
             <a href="mailto:vonbodungenp@ismanila.org" class="text-dark" title="Email Polly">
-        <i class="bi bi-envelope-fill mt-1"></i>
-    </a>
+                <i class="bi bi-envelope-fill mt-1"></i>
+            </a>
         </div>
 
         <!-- Team Member 4 -->
@@ -398,8 +445,8 @@ a.text-dark:hover .bi-envelope-fill {
             <h6 class="mb-0">Roxanne Cortes</h6>
             <small>ES EdTech Specialist</small>
             <a href="mailto:cortesrox@ismanila.org" class="text-dark" title="Email Roxy">
-        <i class="bi bi-envelope-fill mt-1"></i>
-    </a>
+                <i class="bi bi-envelope-fill mt-1"></i>
+            </a>
         </div>
 
         <!-- Team Member 5 -->
@@ -409,8 +456,8 @@ a.text-dark:hover .bi-envelope-fill {
             <h6 class="mb-0">Cary Hart</h6>
             <small>MS EdTech Coordinator</small>
             <a href="mailto:hartc@ismanila.org" class="text-dark" title="Email Cary">
-        <i class="bi bi-envelope-fill mt-1"></i>
-    </a>
+                <i class="bi bi-envelope-fill mt-1"></i>
+            </a>
         </div>
 
         <!-- Add a 6th if needed -->
@@ -421,14 +468,13 @@ a.text-dark:hover .bi-envelope-fill {
             <h6 class="mb-0">Star Alcorcon</h6>
             <small>MS EdTech Specialist</small>
             <a href="mailto:alcorcons@ismanila.org" class="text-dark" title="Email Star">
-        <i class="bi bi-envelope-fill mt-1"></i>
-    </a>
+                <i class="bi bi-envelope-fill mt-1"></i>
+            </a>
         </div>
 
 
     </div>
 </div>
-
 
 
 {% comment %}<!-- User Greeting/Login -->

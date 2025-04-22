@@ -28,6 +28,9 @@ def thank_you(request):
 def aiguidelines(request):
     return render(request, 'aiguidelines.html')
 
+def responsibleuse(request):
+    return render(request, 'responsibleuse.html')
+
 def faq(request):
     return render(request, 'faq.html')
 
