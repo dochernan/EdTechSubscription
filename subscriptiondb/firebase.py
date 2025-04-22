@@ -58,7 +58,7 @@ database_ref = db.reference()
 
 
 # Function to add a user to Firebase
-def add_subscription_to_firebase(appname, renewaldate, responsible, division, subject, cost_per_unit, num_licenses, cost_quote, link, admin_dashboard, admin_accounts, admin_username, admin_password, account_contact, renewal_recipient, edtech_notes, logourl):
+def add_subscription_to_firebase(appname, renewaldate, responsible, division, subject, cost_per_unit, num_licenses, cost_quote, link, admin_dashboard, admin_accounts, admin_username, admin_password, account_contact, renewal_recipient, edtech_notes, logo_url):
     # Ensure division is stored as a list in Firebase
     if isinstance(division, str):
         division = [division]  # fallback in case it's passed as a single string
@@ -83,7 +83,7 @@ def add_subscription_to_firebase(appname, renewaldate, responsible, division, su
         'account_contact': account_contact,
         'renewal_recipient': renewal_recipient,
         'edtech_notes': edtech_notes,
-        'logourl': logourl,
+        'logo_url': logo_url,
 
     })
     return app_ref
