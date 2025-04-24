@@ -10,18 +10,19 @@ from django.contrib.auth.decorators import login_required
 def home(request):
     return render(request, 'home.html')
 
-@login_required
+@login_required(login_url='/')
 def subscriptions(request):
     return render(request, 'subscriptions.html')
 
-@login_required
+@login_required(login_url='/')
 def users(request):
     return render(request, 'users.html')
 
-@login_required
+@login_required(login_url='/')
 def contact_us(request):
     return render(request, 'contact_us.html')
 
+@login_required(login_url='/')
 def thank_you(request):
     return render(request, 'thank_you.html')
 
@@ -33,7 +34,7 @@ def responsibleuse(request):
 
 def faq(request):
     return render(request, 'faq.html')
-
+@login_required(login_url='/')
 def apps(request):
     snapshot = database_ref.child("subscriptions").get()
 
@@ -51,7 +52,7 @@ def apps(request):
     return render(request, "apps.html", {"apps": apps})
 
 
-@login_required
+@login_required(login_url='/')
 def request(request):
 
     snapshot = database_ref.child('requests').get()
@@ -97,7 +98,7 @@ def upload_to_firebase_storage(file_obj, filename_prefix="logos"):
 
 
 # Function to add user to Firebase Realtime Database
-def add_subscription_to_firebase(appname, renewaldate, responsible, division, subject, cost_per_unit, num_licenses, cost_quote, link, admin_dashboard, admin_accounts, admin_username, admin_password, account_contact, renewal_recipient, edtech_notes):
+def add_subscription_to_firebase(appname, renewaldate, responsible, division, subject, cost_per_unit, num_licenses, cost_quote, link, admin_dashboard, admin_accounts, admin_username, admin_password, account_contact, renewal_recipient, edtech_notes, logo_url):
     # Ensure division is stored as a list in Firebase
     if isinstance(division, str):
         division = [division]
@@ -121,7 +122,8 @@ def add_subscription_to_firebase(appname, renewaldate, responsible, division, su
         'admin_password': admin_password,
         'account_contact': account_contact,
         'renewal_recipient': renewal_recipient,
-        'edtech_notes': edtech_notes
+        'edtech_notes': edtech_notes,
+        'logo_url': logo_url,
 
     })
     return subscriptions_ref
@@ -139,6 +141,7 @@ def get_users_from_firebase():
     users = users_ref.get()
     return users
 
+@login_required(login_url='/')
 def add_subscription(request):
     if request.method == 'POST':
         appname = request.POST.get('appname')
@@ -152,6 +155,7 @@ def add_subscription(request):
         cost_quote = request.POST.get('cost_quote')
         link = request.POST.get('link')
         admin_dashboard = request.POST.get('admin_dashboard')
+        admin_accounts = request.POST.get('admin_accounts')
         admin_username = request.POST.get('admin_username')
         admin_password = request.POST.get('admin_password')
         account_contact = request.POST.get('account_contact')
@@ -168,11 +172,11 @@ def add_subscription(request):
         else:
             logo_url = None
 
-        add_subscription_to_firebase(appname, renewaldate, responsible, division, subject, cost_per_unit, num_licenses, cost_quote, link, admin_dashboard, admin_username, admin_password, account_contact, renewal_recipient, edtech_notes, logo_url)
+        add_subscription_to_firebase(appname, renewaldate, responsible, division, subject, cost_per_unit, num_licenses, cost_quote, link, admin_dashboard, admin_accounts, admin_username, admin_password, account_contact, renewal_recipient, edtech_notes, logo_url)
         return redirect('subscriptions')  # Redirect to the list_subscriptions view
     return render(request, 'add_subscription.html')
 
-
+@login_required(login_url='/')
 def list_subscriptions(request):
     search_query = request.GET.get("search", "").strip()
 
@@ -183,6 +187,7 @@ def list_subscriptions(request):
 
     return render(request, "subscriptions.html", {"subscriptions": subscriptions})
 
+@login_required(login_url='/')
 def list_users(request):
     search_query = request.GET.get("search", "").strip()
     users = {}
@@ -204,14 +209,14 @@ def list_users(request):
 def logout_view(request):
     logout(request)
     return redirect('/')
-
+@login_required(login_url='/')
 def delete_subscription(request, key):
     try:
         database_ref.child('subscriptions').child(key).delete()
     except Exception as e:
         print(f"Error deleting subscription: {e}")
     return redirect('subscriptions')  # Or wherever your list page is
-
+@login_required(login_url='/')
 def delete_user(request, key):
     try:
         database_ref.child('users').child(key).delete()
@@ -219,7 +224,7 @@ def delete_user(request, key):
         print(f"Error deleting user: {e}")
     return redirect('users')  # Or wherever your list page is
 
-
+@login_required(login_url='/')
 def edit_subscription(request, key):
     subscription_ref = database_ref.child('subscriptions').child(key)
 
@@ -256,7 +261,7 @@ def edit_subscription(request, key):
         'division_tags': ['ES', 'MS', 'HS'],
     }
     return render(request, 'edit_subscription.html', context)
-
+@login_required(login_url='/')
 def edit_user(request, key):
     user_ref = database_ref.child('users').child(key)
 
@@ -284,7 +289,7 @@ def edit_user(request, key):
 
 
 
-@login_required
+@login_required(login_url='/')
 def contact_us(request):
     if request.method == 'POST':
         name = request.user.get_full_name()
