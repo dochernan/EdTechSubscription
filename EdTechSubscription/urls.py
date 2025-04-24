@@ -6,5 +6,4 @@ urlpatterns = [
     path('', include('subscriptiondb.urls')),
     path('auth/', include('social_django.urls', namespace='social')),
 
-
 ]
