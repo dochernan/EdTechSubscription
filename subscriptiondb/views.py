@@ -1,7 +1,7 @@
 from django.contrib.auth import logout
 from django.shortcuts import render, redirect
 from datetime import datetime
-from .firebase import database_ref, search_subscription_in_firebase, search_user_in_firebase
+from .firebase import database_ref, search_subscription_in_firebase, search_user_in_firebase, save_user_to_firebase
 from django.core.mail import send_mail
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
@@ -414,3 +414,364 @@ def ajax_search_users(request):
 
 
 
+from django.http import JsonResponse
+from django.shortcuts import render
+from .firebase import database_ref
+
+def user_sidebar(request):
+    users_ref = database_ref.child('users')
+    users = users_ref.get()
+
+    user_list = []
+    if isinstance(users, list):
+        for index, user_data in enumerate(users):
+            if user_data:
+                user_list.append({
+                    'id': str(index),
+                    'name': user_data.get('first_name') or user_data.get('email'),
+                    'email': user_data.get('email')
+                })
+    elif isinstance(users, dict):
+        for key, user_data in users.items():
+            user_list.append({
+                'id': key,
+                'name': user_data.get('first_name') or user_data.get('email'),
+                'email': user_data.get('email')
+            })
+
+    selected_user_id = request.GET.get('selected_user')
+    selected_user = None
+
+    for user in user_list:
+        if user['id'] == selected_user_id:
+            selected_user = user
+            break
+
+    return render(request, 'user_sidebar.html', {
+        'users': user_list,
+        'selected_user': selected_user
+    })
+
+
+from django.shortcuts import render, redirect
+from datetime import datetime
+from .firebase import database_ref  # Adjust this to your Firebase setup
+
+def gogochat(request, chatid):
+    current_user_id =  '2'#request.session.get('user_id')
+    #if not current_user_id:
+    #    return redirect('gologin')
+
+    # Handle sending a new message (POST request)
+    if request.method == 'POST':
+        message = request.POST.get('message')
+        message_date = datetime.now().strftime("%Y-%m-%d %H:%M")
+
+        # Save the message under the chat node (with Firebase-generated message ID)
+        database_ref.child('chat').child(chatid).push({
+            'sid': current_user_id,
+            'message': message,
+            'datetime': message_date,
+        })
+
+        return redirect('gogochat', chatid=chatid)
+
+    # Handle loading messages (GET request)
+    chat_snapshot = database_ref.child('chat').child(chatid).get()
+    messages = []
+
+    if isinstance(chat_snapshot, dict):
+        for msg_id, msg_data in chat_snapshot.items():
+            # Skip participants and created_at metadata
+            if msg_id not in ['participants', 'created_at'] and isinstance(msg_data, dict):
+                messages.append({
+                    'id': msg_id,
+                    'sid': msg_data.get('sid'),
+                    'message': msg_data.get('message'),
+                    'datetime': msg_data.get('datetime'),
+                })
+
+    # Sort messages by datetime if needed (optional)
+    # messages.sort(key=lambda x: x['datetime'])
+
+    return render(request, 'gochat.html', {
+        'chatid': chatid,
+        'messages': messages
+    })
+
+
+
+def create_chat(request):
+    current_user_id = request.session.get('user_id')
+
+    #if not current_user_id:
+    #    return redirect('/')
+
+    if request.method == 'POST':
+        recipient_id = request.POST.get('recipient_id')
+        if recipient_id:
+            from datetime import datetime
+            created_at = datetime.now().strftime("%Y-%m-%d %H:%M")
+
+            # Generate new chat ID (Firebase push generates a unique key)
+            new_chat_ref = database_ref.child('chat').push({
+                'participants': {
+                    'user1': current_user_id,
+                    'user2': recipient_id,
+                },
+                'created_at': created_at
+            })
+
+            # Get the generated chatid (key)
+            chatid = new_chat_ref.key
+
+            # Redirect to the chat page for this conversation
+            return redirect('gogochat', chatid=chatid)
+
+    # If no recipient is selected or not POST
+    return redirect('/')  # Or wherever your homepage is
+
+def conversation_list(request):
+    current_user_id = '2'#request.session.get('user_id')
+    if not current_user_id:
+        return redirect('gologin')
+
+    chat_snapshot = database_ref.child('chat').get()
+    conversations = []
+
+    if isinstance(chat_snapshot, dict):
+        for chat_key, chat_data in chat_snapshot.items():
+            participants = chat_data.get('participants', {})
+            if current_user_id in participants.values():
+                conversations.append({
+                    'chatid': chat_key,
+                    'participants': participants,
+                    'created_at': chat_data.get('created_at')
+                })
+
+    return render(request, 'conversation_list.html', {
+        'conversations': conversations
+    })
+
+
+from django.shortcuts import render, redirect
+from firebase_admin import db  # Ensure you've initialized Firebase correctly
+
+
+def add_user(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+
+        # Reference to users node
+        users_ref = db.reference('users')
+
+        # Check if email already exists in any child node
+        users = users_ref.get()
+        email_exists = False
+
+        if users:
+            for user_id, user_data in users.items():
+                if user_data.get('email') == email:
+                    email_exists = True
+                    break
+
+        if not email_exists:
+            save_user_to_firebase(email)
+        else:
+            # You may also set a message to inform the user that the email already exists
+            return render(request, 'add_user.html', {'error': 'Email already exists.'})
+
+        return redirect('home')
+
+    return render(request, 'add_user.html')
+
+
+# views.py
+
+from django.shortcuts import render
+from .models_mssql import ITResource
+#
+# def it_resources(request):
+#     resources = ITResource.objects.using('mssql').all()
+#     return render(request, 'it_resources.html', {'resources': resources})
+
+# views.py
+import requests
+from collections import defaultdict
+from django.core.cache import cache
+from django.core.paginator import Paginator
+from django.shortcuts import render
+#
+# API_URL = "https://api.ismanila.org/DestinyResource/Destiny/FetchResources"
+# AUTH_HEADER = "Basic OGtWNXo4T0NTSUdTcDoxfFJuOCFUNTk8XiVISWBJcw=="
+# PAGE_SIZE = 100
+# CACHE_TIMEOUT = 60 * 10
+#
+# ITEM_STATUS_LABELS = {
+#     0: ('Available', 'success'),
+#     100: ('Checked Out', 'primary'),
+#     104: ('Out for Repairs', 'warning'),
+#     200: ('Lost', 'danger'),
+#     205: ('Retired', 'secondary'),
+# }
+
+
+
+# def fetch_api_resources():
+#     cached_data = cache.get("cached_it_resources")
+#     if cached_data:
+#         return cached_data
+#
+#     all_data = []
+#     page = 1
+#     while True:
+#         try:
+#             response = requests.get(
+#                 f"{API_URL}?pageNumber={page}&pageSize=500",
+#                 headers={
+#                     "accept": "*/*",
+#                     "Authorization": AUTH_HEADER,
+#                 },
+#                 timeout=10
+#             )
+#             response.raise_for_status()
+#             page_data = response.json()
+#
+#             if not page_data:
+#                 break
+#
+#             all_data.extend(page_data)
+#             page += 1
+#
+#         except requests.exceptions.RequestException as e:
+#             print(f"API error on page {page}: {e}")
+#             break
+#
+#     cache.set("cached_it_resources", all_data, CACHE_TIMEOUT)
+#     return all_data
+#
+# def it_resources(request):
+#     all_resources = fetch_api_resources()
+#     status_choices = [(k, v[0]) for k, v in ITEM_STATUS_LABELS.items()]
+#     # Filter based on multiple selected statuses (from GET parameters like ?status=0&status=100)
+#     selected_statuses = request.GET.getlist("status")
+#     if selected_statuses:
+#         selected_statuses = set(map(int, selected_statuses))
+#         all_resources = [res for res in all_resources if res.get("CurrentItemStatus") in selected_statuses]
+#
+#     # Replace SiteName with status label for display purposes
+#     for item in all_resources:
+#         status_id = item.get("CurrentItemStatus", 0)
+#         label, color = ITEM_STATUS_LABELS.get(status_id, ('Unknown', 'dark'))
+#         item["StatusLabel"] = label
+#         item["StatusColor"] = color
+#
+#     # Group resources by ResourceTypeName
+#     grouped = defaultdict(list)
+#     for item in all_resources:
+#         grouped[item.get("ResourceTypeName", "Unknown")].append(item)
+#
+#     # Convert dict to sorted list of tuples
+#     grouped_resources = sorted(grouped.items())
+#
+#     # Paginate group list, not individual resources
+#     paginator = Paginator(grouped_resources, PAGE_SIZE)
+#     page_number = request.GET.get("page", 1)
+#     page_obj = paginator.get_page(page_number)
+#
+#     return render(request, "it_resources.html", {
+#         "grouped_resources": page_obj,
+#         "selected_statuses": list(selected_statuses) if selected_statuses else [],
+#         "status_choices": status_choices
+#     })
+
+# views.py
+import requests
+from collections import defaultdict
+from django.core.cache import cache
+from django.core.paginator import Paginator
+from django.shortcuts import render
+
+API_URL = "https://api.ismanila.org/DestinyResource/Destiny/FetchResources"
+AUTH_HEADER = "Basic OGtWNXo4T0NTSUdTcDoxfFJuOCFUNTk8XiVISWBJcw=="
+PAGE_SIZE = 100
+CACHE_TIMEOUT = 60 * 10
+
+ITEM_STATUS_LABELS = {
+    0: ('Available', 'success'),
+    100: ('Checked Out', 'primary'),
+    104: ('Out for Repairs', 'warning'),
+    200: ('Lost', 'danger'),
+    205: ('Retired', 'secondary'),
+    201: ('Stolen', 'warning'),
+    202: ('No Longer in Use', 'warning'),
+    204: ('Approved for Disposal' , 'warning'),
+    206: ('Ready for Disposal' , 'warning')
+
+}
+
+def fetch_api_resources():
+    cached_data = cache.get("cached_it_resources")
+    if cached_data:
+        return cached_data, False
+
+    all_data = []
+    page = 1
+    while True:
+        try:
+            response = requests.get(
+                f"{API_URL}?pageNumber={page}&pageSize=500",
+                headers={
+                    "accept": "*/*",
+                    "Authorization": AUTH_HEADER,
+                },
+                timeout=10
+            )
+            response.raise_for_status()
+            page_data = response.json()
+
+            if not page_data:
+                break
+
+            all_data.extend(page_data)
+            page += 1
+
+        except requests.exceptions.RequestException as e:
+            print(f"API error on page {page}: {e}")
+            break
+
+    cache.set("cached_it_resources", all_data, CACHE_TIMEOUT)
+    return all_data, True
+
+def it_resources(request):
+    all_resources, loading = fetch_api_resources()
+
+    selected_statuses = request.GET.getlist("status")
+    if selected_statuses:
+        selected_statuses = set(map(int, selected_statuses))
+        all_resources = [res for res in all_resources if res.get("CurrentItemStatus") in selected_statuses]
+
+    for item in all_resources:
+        status_id = item.get("CurrentItemStatus", 0)
+        label, color = ITEM_STATUS_LABELS.get(status_id, ('Unknown', 'dark'))
+        item["StatusLabel"] = label
+        item["StatusColor"] = color
+
+    grouped = defaultdict(list)
+    for item in all_resources:
+        grouped[item.get("ResourceTypeName", "Unknown")].append(item)
+
+    grouped_resources = sorted(grouped.items())
+
+    paginator = Paginator(grouped_resources, PAGE_SIZE)
+    page_number = request.GET.get("page", 1)
+    page_obj = paginator.get_page(page_number)
+
+    status_choices = [(k, v[0]) for k, v in ITEM_STATUS_LABELS.items()]
+
+    return render(request, "it_resources.html", {
+        "grouped_resources": page_obj,
+        "selected_statuses": list(selected_statuses) if selected_statuses else [],
+        "status_choices": status_choices,
+        "loading": loading
+    })

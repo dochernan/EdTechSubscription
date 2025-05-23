@@ -1,10 +1,162 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsible Use Policy @ ISM</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- 3D FlipBook CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flipbook-react@1.0.20/dist/flipbook.min.css">
+
+    <style>
+        body {
+            background-color: white;
+        }
+
+        .navbar, .footer, .text-muted {
+            background-color: darkslategrey;
+            color: khaki !important;
+        }
+
+        .navbar-brand, .navbar-brand:hover {
+            color: whitesmoke;
+        }
+
+        .nav-link {
+            color: whitesmoke;
+        }
+
+        .nav-link:hover {
+            color: khaki;
+        }
+
+        .nav-link.active {
+            color: khaki !important;
+            font-weight: bold;
+        }
+
+        .content-section {
+            padding: 3rem 0;
+        }
+
+        .pdf-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 80vh;
+        }
+
+        .flipbook-wrapper {
+            width: 90%;
+            max-width: 1000px;
+            height: 100%;
+            margin: auto;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+        }
+    </style>
 </head>
 <body>
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">EdTech @ ISM</a>
 
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav">
+
+                <!-- Home (default) -->
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}"
+                       href="{% url 'home' %}">Home</a>
+                </li>
+
+                <!-- Guidelines with sub-navigation -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="guidelinesDropdown" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        Guidelines
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="guidelinesDropdown">
+                        <li><a class="dropdown-item" href="{% url 'aiguidelines' %}">AI Guidelines</a></li>
+                        <li><a class="dropdown-item" href="{% url 'responsibleuse' %}">Responsible Use</a></li>
+                    </ul>
+                </li>
+
+                {% if user.is_authenticated %}
+                    <!-- Apps with sub-navigation -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="appsDropdown" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            Apps
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="appsDropdown">
+                            <li><a class="dropdown-item" href="{% url 'apps' %}">Approved Apps</a></li>
+                            {% if request.session.user_level == "Basic" %}
+                                <li><a class="dropdown-item" href="{% url 'contact_us' %}">Request for Apps</a></li>
+                            {% elif request.session.user_level == "Administrator" %}
+                                <li><a class="dropdown-item" href="{% url 'subscriptions' %}">Subscription</a></li>
+                                <li><a class="dropdown-item" href="{% url 'request' %}">New Requests</a></li>
+                            {% endif %}
+                        </ul>
+                    </li>
+                {% endif %}
+
+                <!-- FAQ (always visible) -->
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'faq' %}active{% endif %}"
+                       href="{% url 'faq' %}">FAQ</a>
+                </li>
+
+                <!-- Settings or Login -->
+                {% if user.is_authenticated %}
+                    <!-- Settings Dropdown (if logged in) -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="settingsDropdown" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            Settings
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="settingsDropdown">
+                            {% if request.session.user_level == "Administrator" %}
+                                <li><a class="dropdown-item" href="{% url 'users' %}">Users</a></li>
+                            {% endif %}
+                            <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <!-- Login button if NOT logged in -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'social:begin' 'google-oauth2' %}">Login</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+
+    </div>
+</nav>
+
+<!-- PDF Viewer -->
+<div class="container-fluid content-section">
+    <h2 class="text-center mb-4">Responsible Use of Digital Technology at ISM</h2>
+    <div class="pdf-container">
+        <iframe src="{% static 'pdfs/responsible-use.pdf' %}#toolbar=0" width="100%" height="100%"
+                class="flipbook-wrapper" frameborder="0" allowfullscreen></iframe>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer text-center mt-5 py-3">
+    <div class="container">
+        <span class="text-muted">&copy; 2025 EdTech @ ISM. All rights reserved.</span>
+    </div>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -21,5 +21,13 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('subscriptions/search/', views.ajax_search_subscriptions, name='ajax_search_subscriptions'),
     path('users/search/', views.ajax_search_users, name='ajax_search_users'),
+    path('user-sidebar/', views.user_sidebar, name='user_sidebar'),
+    path('gogochat/<str:chatid>/', views.gogochat, name='gogochat'),
+
+path('create-chat/', views.create_chat, name='create_chat'),
+path('conversations/', views.conversation_list, name='conversation_list'),
+path('resources/', views.it_resources, name='it_resources'),
+
+
 
 ]

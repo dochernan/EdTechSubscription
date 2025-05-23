@@ -10,11 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
-
 from dotenv import load_dotenv
 import os
 from pathlib import Path
-#from decouple import config
+
+# from decouple import config
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -34,7 +34,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost','.vercel.app']
+ALLOWED_HOSTS = ['localhost', '.vercel.app']
 
 # Application definition
 
@@ -100,7 +100,20 @@ DATABASES = {
         default=os.environ.get('DATABASE_URL'),
         conn_max_age=600,
         ssl_require=True
-    )
+    ),
+    'mssql': {
+        'ENGINE': 'mssql',
+        'NAME': 'destiny',
+        'USER': 'sa',
+        'PASSWORD': 'D35+1ny!',
+        'HOST': '',  # Leave this blank
+        'PORT': '',  # Leave this blank
+        'OPTIONS': {
+            'driver': 'ODBC Driver 17 for SQL Server',
+            'dsn': None,
+            'connection_string': 'DRIVER={ODBC Driver 17 for SQL Server};SERVER=172.25.43.9,52799;DATABASE=destiny;UID=sa;PWD=D35+1ny!;Encrypt=no;TrustServerCertificate=yes',
+        },
+    }
 }
 
 
@@ -143,9 +156,6 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'subscriptiondb/static'),  # optional: add your app's static folder
 ]
 
-
-
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
@@ -180,6 +190,3 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-
-
-
